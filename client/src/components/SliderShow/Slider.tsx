@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import "./Slider.css";
 
-import iu1 from '../assets/images/iu1.jpeg';
-import iu2 from '../assets/images/iu2.jpeg';
-import iu3 from '../assets/images/iu3.jpeg';
+import iu1 from '../../assets/images/iu1.jpeg';
+import iu2 from '../../assets/images/iu2.jpeg';
+import iu3 from '../../assets/images/iu3.jpeg';
 
 type SliderProps = {
   // Define your props here if needed
