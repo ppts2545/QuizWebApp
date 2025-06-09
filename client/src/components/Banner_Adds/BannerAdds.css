@@ -1,0 +1,32 @@
+.banner-container{
+    max-width: 300px;
+}
+.banner-image {
+    max-width: 300px;
+  background-image: url('../assets/images/iu1.jpeg');
+  background-size: cover;
+  background-position: center;
+  height: 300px;
+  position: relative;
+}
+
+.banner-text {
+  position: absolute;
+  bottom: 20px;
+  left: 40px;
+  color: white;
+}
+
+.banner.top-banner {
+    position: relative;
+    width: 300px;
+    height: 300px;
+    background-color: #000;
+}
+
+.banner.bottom-banner {
+    position: relative;
+    width: 300px;
+    height: 300px;
+    background-color: #333;
+}

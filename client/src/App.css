@@ -1,0 +1,12 @@
+.main-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 32px;
+    margin-top: 80px;
+}
+
+.add-banner-section {
+    display: flex;
+    flex-direction: column;
+    gap:24px
+}
