@@ -38,7 +38,7 @@ const Slider: React.FC<SliderProps> = ({}) => {
           style={{ display: index === currentSlide ? 'block' : 'none' }}
         >
           <div className="numbertext">{slide.id} / {slides.length}</div>
-          <img src={slide.image} style={{ width: '100%' }} alt={`Slide ${slide.id}`} />
+          <img src={slide.image}  alt={`Slide ${slide.id}`} />
           <div className="text">{slide.caption}</div>
         </div>
       ))}

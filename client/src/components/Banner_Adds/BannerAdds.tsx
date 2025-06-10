@@ -10,7 +10,7 @@ type BannerAddsProps = {
 
 const BannerAdds: React.FC<BannerAddsProps> = ({ title, text, buttonText, className}) => {
     return(
-            <div className='ba'>
+            <div className='banner-container'>
                 <div className={`banner ${className}`}>
                     <div className="banner-image">
                         <div className="banner-text">
