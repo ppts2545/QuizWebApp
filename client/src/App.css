@@ -31,7 +31,7 @@ body {
   }
 }
 
-@media (min-width: 694px) and (max-width: 768px) {
+@media (min-width: 694px) and (max-width: 800px) {
   .main-content {
     flex-direction: column;
     align-items: center;
