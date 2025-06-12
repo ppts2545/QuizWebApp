@@ -1,0 +1,42 @@
+VERIFY_JWT(token)
+
+FUNCTION VERIFY_JWT(token):
+    TRY:
+        decoded = jwt.verify(token, secret_key)  // checks signature
+        RETURN decoded.user_info
+    CATCH error:
+        RETURN invalid  // token is expired, tampered, or fake
+
+
+use for =>  
+    JWT verification checks:
+Signature verification
+
+The JWT token is made of three parts:
+header.payload.signature
+
+The signature is created by the server when the token is issued, using a secret key and a cryptographic algorithm (like HMAC SHA256).
+
+When verifying, the server:
+
+Takes the header and payload from the received token,
+
+Uses the same secret key and the algorithm to recompute the signature,
+
+Compares it with the signature part in the token.
+
+If they match, the token is authentic and unchanged.
+
+If they don’t match, the token has been tampered with or was not issued by your server.
+
+Token expiration
+
+JWT usually contains a field called exp (expiration time).
+
+The verification checks whether the token’s expiration time has passed.
+
+If the token is expired, verification fails.
+
+Token format and structure
+
+It also checks that the token is well-formed and not corrupted (correct JSON structure, three parts separated by dots, etc.).
