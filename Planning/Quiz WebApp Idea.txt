@@ -1,6 +1,7 @@
 Quiz WebApp
 
 function 
+-create Account
 -create Room
 - join Room
 -admin_room create test , as must as admin_room like and set question, and collect anwer on create question page in create page in that room
@@ -9,6 +10,9 @@ function
 	-Count time on admin_room set , if the time out skip that choice and set as default as false
 	-Ranking each player in that room(Player) after done all quiz
 	-Display Ranking in last page 
+
+- Score (depend on rule admin set) depend on time , or choice for score each player
+- Ranking User By Score 
 
 technology we need
 	- WebSockets = WebSockets allow your server and browser to "talk to each other" in real-time, without the user needing to refresh the page.
