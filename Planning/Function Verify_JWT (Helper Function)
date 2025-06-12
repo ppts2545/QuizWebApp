@@ -1,4 +1,4 @@
-VERIFY_JWT(token)
+Function VERIFY_JWT(token)
 
 FUNCTION VERIFY_JWT(token):
     TRY:
