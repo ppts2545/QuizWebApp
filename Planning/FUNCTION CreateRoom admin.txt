@@ -1,40 +1,45 @@
+FUNCTION Join_Room(jwt_token, room_id):
 
-Function for admin Create Room
+// 1. Verify JWT token
+user_info = VERIFY_JWT(jwt_token)
 
-FUNCTION CreateRoom(admin_name):
-	room_id = generateUniqueRoomID()
-	create new database collection for room_id
-	store admin_name and creation_time in room metadata
-	
-	START 30-minute countdown timer
-	START admin_inactivity_timer (e.g., 5–10 minutes)
-	
-	WHILE quiz_not_finished AND room_timer_not_expired:
-		IF admin add a question:
-			reset admin_inactivity_timer
-			store question (question_text, choices, correct_anwer)
-		IF admin clicks "Finished Quiz":
-			mark room as "ready"
-			BREAK
-		IF admin_inactivity_timer expires:
-			delete room collection
-			log "Room deleted due to admin inactivity"
-			RETRUN
-		
-	IF room_timer expires AND no questions were created:
-		delete room collection
-		log "Room deleted due to no quiz created in time"
-		RETURN
-		
-	ELSE IF room marked as "ready":
-		save quiz and procees to player join phase
-	
-	
-	
-****
-💡 Bonus Ideas for Real Implementation (Advanced Later):
-	-Use setTimeout() in Node.js to auto-delete rooms
+IF user_info is invalid:
+	RETURN error: "Please login or sign up first"
 
-	-Store last_activity_time for each admin and check it regularly
 
-	-Limit how many rooms one IP can create in a short time (rate limiting)
+// 2. Fetch room document by room_id
+room = FIND ONE FROM rooms_collection WHERE _id == room_id
+
+IF room is null:
+	RETURN error: "Room not found"
+
+
+// 3. Check if user is allowed to join
+IF user_info.id NOT IN room.participants AND user_info.id != room.owner_id:
+	RETURN error: "Access denied"
+	
+
+
+// 4. Check if quiz is ready
+IF room.is_ready != true:
+	RETURN message: "Please wait, admin has not finished setting up the quiz."
+
+
+// 5. Fetch quiz data for this room
+quiz_data = FIND ONE FROM quizzes_collection WHERE room_id == room_id
+
+IF quiz_data is null:
+	RETURN error: "Quiz not found"
+
+
+// 6. Log the join event
+INSERT ONE INTO room_logs_collection:
+	{
+		user_id: user_info.id,
+		room_id: room_id,
+		joined_at: CURRENT_TIMESTAMP
+	}
+
+
+// 7. Return quiz data to frontend
+RETURN success: true, message: "Joined successfully", data: quiz_data

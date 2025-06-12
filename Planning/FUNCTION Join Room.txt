@@ -1,0 +1,22 @@
+FUNCTION Join_Room
+
+FUNCTION Join_Room(session_username, room_id):
+    
+    IF session_username IS NULL:
+        DISPLAY "Please login or sign up first"
+        RETURN
+
+    room = FIND room FROM rooms_table WHERE room_id == room_id
+
+    IF room NOT FOUND:
+        DISPLAY "Room does not exist"
+        RETURN
+
+    CONNECT user TO room_id collection or websocket
+
+    IF room.status == "ready":
+        quiz_data = FETCH quiz data FROM room_id
+        invoke DisplayQuiz(quiz_data, session_username)
+    ELSE:
+        DISPLAY "Waiting for admin to start the quiz"
+
