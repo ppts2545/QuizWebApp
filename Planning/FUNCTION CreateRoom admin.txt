@@ -8,6 +8,9 @@ user_info = VERIFY_JWT(jwt_token)
 IF user_info is invalid:
 	RETURN error: "Please login or sign up first before create a room"
 
+IF (MiddlewareCheckBeforeCreateRoom)
+	RETURn error: "You cannot create duplicate room, please delte old room before create new room"
+
 // Use user_info to create the room
 	room_id = GENERATE_UNIQUE_ID()
 

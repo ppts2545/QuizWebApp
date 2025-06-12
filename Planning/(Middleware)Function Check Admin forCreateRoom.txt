@@ -4,7 +4,9 @@ Function Check Admin for Create Room
 Pseudocode
 
 Function MiddlewareCheckBeforeCreateRoom(admin_name):
-	IF database has active room where admin_name == admin_name:
-		RETRUN "Error: You already have an active room"
-	ELSE:
-		CALL CreateRoom(admin_name)
+	room_exists = FIND ONE room IN rooms_collection WHERE owner_id == admin_id AND is_ready == FALSE
+
+    IF room_exists:
+        RETURN FALSE  // admin already has an unfinished/active room
+    ELSE:
+        RETURN TRUE   // no active room, can proceed
