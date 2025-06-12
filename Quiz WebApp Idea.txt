@@ -1,6 +1,7 @@
 Quiz WebApp
 
 function 
+-create Account
 -create Room
 - join Room
 -admin_room create test , as must as admin_room like and set question, and collect anwer on create question page in create page in that room
