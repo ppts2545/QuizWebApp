@@ -8,6 +8,7 @@ FUNCTION VERIFY_JWT(token):
         RETURN invalid  // token is expired, tampered, or fake
 
 
+==Explain==
 use for =>  
     JWT verification checks:
 Signature verification

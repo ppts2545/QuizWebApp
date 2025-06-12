@@ -30,6 +30,7 @@ IF room.is_ready != true:
 // 5. Fetch quiz data for this room
 quiz_data = FIND ONE FROM quizzes_collection WHERE room_id == room_id
 
+
 IF quiz_data is null:
 	RETURN error: "Quiz not found"
 
