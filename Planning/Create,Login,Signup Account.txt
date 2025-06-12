@@ -46,7 +46,8 @@ FUNCTION Login():
         RETURN error: "Account temporarily locked. Try again later"
 
     IF VERIFY(user_password, user.password_hash):   // bcrypt.compare
-        START user session using secure cookies or JWT
+        session_token = CREATE JWT or session cookie with user_id and username
+        STORE session_token in secure cookie or frontend localStorage
         RETURN success: "Login successful"
     ELSE:
         INCREMENT failed login counter
@@ -64,13 +65,17 @@ FUNCTION GoogleLogin():
         user_name = get from Google
 
         IF user_email exists in users_table:
-            START session (set JWT or secure cookie)
+            session_token = CREATE JWT or session cookie with user_id and username
+            STORE session_token in secure cookie or localStorage
             RETURN success: "Login successful"
         ELSE:
-            INSERT INTO users_table (email, username, password_hash=NULL)
-                VALUES (user_email, user_name)
+            user_password = get from user
+            hash(user_password)
+            INSERT INTO users_table (email, username, password_hash)
+                VALUES (user_email, user_name,  hash(user_password))
 
-            START session (JWT or secure cookie)
+            session_token = CREATE JWT or session cookie
+            STORE session_token in secure cookie or localStorage
             RETURN success: "Account created with Google"
             
             
