@@ -1,0 +1,40 @@
+
+Function for admin Create Room
+
+FUNCTION CreateRoom(admin_name):
+	room_id = generateUniqueRoomID()
+	create new database collection for room_id
+	store admin_name and creation_time in room metadata
+	
+	START 30-minute countdown timer
+	START admin_inactivity_timer (e.g., 5–10 minutes)
+	
+	WHILE quiz_not_finished AND room_timer_not_expired:
+		IF admin add a question:
+			reset admin_inactivity_timer
+			store question (question_text, choices, correct_anwer)
+		IF admin clicks "Finished Quiz":
+			mark room as "ready"
+			BREAK
+		IF admin_inactivity_timer expires:
+			delete room collection
+			log "Room deleted due to admin inactivity"
+			RETRUN
+		
+	IF room_timer expires AND no questions were created:
+		delete room collection
+		log "Room deleted due to no quiz created in time"
+		RETURN
+		
+	ELSE IF room marked as "ready":
+		save quiz and procees to player join phase
+	
+	
+	
+****
+💡 Bonus Ideas for Real Implementation (Advanced Later):
+	-Use setTimeout() in Node.js to auto-delete rooms
+
+	-Store last_activity_time for each admin and check it regularly
+
+	-Limit how many rooms one IP can create in a short time (rate limiting)

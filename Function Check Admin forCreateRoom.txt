@@ -1,0 +1,10 @@
+Function Check Admin for Create Room
+** if admin already have room create they cannot create duplicate room
+
+Pseudocode
+
+Function MiddlewareCheckBeforeCreateRoom(admin_name):
+	IF database has active room where admin_name == admin_name:
+		RETRUN "Error: You already have an active room"
+	ELSE:
+		CALL CreateRoom(admin_name)
