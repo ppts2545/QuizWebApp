@@ -74,6 +74,55 @@ FUNCTION GoogleLogin():
             RETURN success: "Account created with Google"
             
             
+            
+FUNCTION ForgotPasswordRequest():
+    DISPLAY form to enter user_email
+    Input email
+	invoke SendResetLink(email)
+
+
+
+FUNCTION SendResetLink(user_email):
+    IF user_email exists in database:
+        reset_token = generateSecureToken()
+        expiration_time = now + 15 minutes
+        store (reset_token, user_id, expiration_time) in password_reset_table
+
+        reset_link = "https://yourapp.com/reset-password?token=" + reset_token
+        sendEmail(to=user_email, body="Click to reset: " + reset_link)
+
+        RETURN success: "Reset link sent to your email."
+        invoke ResetPasswordPage(token)
+    ELSE:
+        RETURN error: "Email not found"
+
+
+
+FUNCTION ResetPasswordPage(token):
+    IF token is valid AND not expired in password_reset_table:
+        DISPLAY form:
+            - new_password_input
+            - confirm_password_input
+        Return token, new_password, confirm_password
+        
+    ELSE:
+        RETURN error: "Token invalid or expired"
+
+
+
+
+
+FUNCTION SubmitNewPassword(token, new_password, confirm_password):
+    IF new_password != confirm_password:
+        RETURN error: "Passwords do not match"
+        
+    user_id = get user_id from password_reset_table using token
+    hashed_password = ENCRYPT(new_password)
+    UPDATE users_table SET password_hash = hashed_password WHERE id = user_id
+    DELETE token from password_reset_table
+    RETURN success: "Password updated successfully"
+
+
 
 MIDDLEWARE rateLimiter():
     IF too many requests from same IP:
@@ -83,3 +132,15 @@ MIDDLEWARE rateLimiter():
 MIDDLEWARE requireHTTPS():
     IF connection IS NOT https:
         REDIRECT to https version
+        
+
+--Optional improvements for real-world usage:--
+Add rate limiting on ForgotPasswordRequest to prevent abuse (e.g., multiple requests for the same email).
+
+Make sure generateSecureToken() creates long, cryptographically random tokens.
+
+Invalidate all active sessions after password reset for better security.
+
+Use HTTPS links always for reset URLs.
+
+Log password reset requests and completions for audit.
