@@ -1,22 +1,47 @@
 FUNCTION Join_Room
 
-FUNCTION Join_Room(session_username, room_id):
-    
-    IF session_username IS NULL:
-        DISPLAY "Please login or sign up first"
-        RETURN
+FUNCTION Join_Room(jwt_token, room_id):
 
-    room = FIND room FROM rooms_table WHERE room_id == room_id
+// 1. Verify JWT token
+user_info = VERIFY_JWT(jwt_token)
 
-    IF room NOT FOUND:
-        DISPLAY "Room does not exist"
-        RETURN
+IF user_info is invalid:
+	RETURN error: "Please login or sign up first"
 
-    CONNECT user TO room_id collection or websocket
 
-    IF room.status == "ready":
-        quiz_data = FETCH quiz data FROM room_id
-        invoke DisplayQuiz(quiz_data, session_username)
-    ELSE:
-        DISPLAY "Waiting for admin to start the quiz"
+// 2. Fetch room document by room_id
+room = FIND ONE FROM rooms_collection WHERE _id == room_id
 
+IF room is null:
+	RETURN error: "Room not found"
+
+
+// 3. Check if user is allowed to join
+IF user_info.id NOT IN room.participants AND user_info.id != room.owner_id:
+	RETURN error: "Access denied"
+	
+
+
+// 4. Check if quiz is ready
+IF room.is_ready != true:
+	RETURN message: "Please wait, admin has not finished setting up the quiz."
+
+
+// 5. Fetch quiz data for this room
+quiz_data = FIND ONE FROM quizzes_collection WHERE room_id == room_id
+
+IF quiz_data is null:
+	RETURN error: "Quiz not found"
+
+
+// 6. Log the join event
+INSERT ONE INTO room_logs_collection:
+	{
+		user_id: user_info.id,
+		room_id: room_id,
+		joined_at: CURRENT_TIMESTAMP
+	}
+
+
+// 7. Return quiz data to frontend
+RETURN success: true, message: "Joined successfully", data: quiz_data
