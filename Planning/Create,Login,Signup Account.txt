@@ -1,0 +1,146 @@
+Create Account Function
+
+FUNCTION CreateAccount():
+    DISPLAY email input form
+    DISPLAY username input form
+    DISPLAY password input form
+
+    INPUT user_email
+    INPUT user_name
+    INPUT user_password
+
+    IF user_email OR user_name already exists in users_table:
+        RETURN error: "Account already exists"
+
+    IF NOT validPassword(user_password):   // Enforce strong password rule
+        RETURN error: "Weak password"
+
+    SEND email_verification_code to user_email
+    INPUT verification_code
+
+    IF verification_code != email_verification_code:
+        RETURN error: "Invalid verification code"
+
+    hashed_password = ENCRYPT(user_password)  // Use bcrypt or similar
+
+    INSERT INTO users_table (email, username, password_hash, created_at)
+        VALUES (user_email, user_name, hashed_password, CURRENT_TIMESTAMP)
+
+    RETURN success: "Account created successfully"
+
+
+
+FUNCTION Login():
+    DISPLAY email input form
+    DISPLAY password input form
+
+    INPUT user_email
+    INPUT user_password
+
+    user = FIND user FROM users_table WHERE email == user_email
+
+    IF user NOT FOUND:
+        RETURN error: "Account not found"
+
+    IF too many failed login attempts:
+        RETURN error: "Account temporarily locked. Try again later"
+
+    IF VERIFY(user_password, user.password_hash):   // bcrypt.compare
+        START user session using secure cookies or JWT
+        RETURN success: "Login successful"
+    ELSE:
+        INCREMENT failed login counter
+        RETURN error: "Incorrect password"
+        
+        
+FUNCTION GoogleLogin():
+    IF user clicks GoogleSignIn:
+        REDIRECT to Google OAuth2 login
+
+    IF Google returns access_token AND user info:
+        VERIFY Google token using Google backend
+
+        user_email = get from Google
+        user_name = get from Google
+
+        IF user_email exists in users_table:
+            START session (set JWT or secure cookie)
+            RETURN success: "Login successful"
+        ELSE:
+            INSERT INTO users_table (email, username, password_hash=NULL)
+                VALUES (user_email, user_name)
+
+            START session (JWT or secure cookie)
+            RETURN success: "Account created with Google"
+            
+            
+            
+FUNCTION ForgotPasswordRequest():
+    DISPLAY form to enter user_email
+    Input email
+	invoke SendResetLink(email)
+
+
+
+FUNCTION SendResetLink(user_email):
+    IF user_email exists in database:
+        reset_token = generateSecureToken()
+        expiration_time = now + 15 minutes
+        store (reset_token, user_id, expiration_time) in password_reset_table
+
+        reset_link = "https://yourapp.com/reset-password?token=" + reset_token
+        sendEmail(to=user_email, body="Click to reset: " + reset_link)
+
+        RETURN success: "Reset link sent to your email."
+        invoke ResetPasswordPage(token)
+    ELSE:
+        RETURN error: "Email not found"
+
+
+
+FUNCTION ResetPasswordPage(token):
+    IF token is valid AND not expired in password_reset_table:
+        DISPLAY form:
+            - new_password_input
+            - confirm_password_input
+        Return token, new_password, confirm_password
+        
+    ELSE:
+        RETURN error: "Token invalid or expired"
+
+
+
+
+
+FUNCTION SubmitNewPassword(token, new_password, confirm_password):
+    IF new_password != confirm_password:
+        RETURN error: "Passwords do not match"
+        
+    user_id = get user_id from password_reset_table using token
+    hashed_password = ENCRYPT(new_password)
+    UPDATE users_table SET password_hash = hashed_password WHERE id = user_id
+    DELETE token from password_reset_table
+    RETURN success: "Password updated successfully"
+
+
+
+MIDDLEWARE rateLimiter():
+    IF too many requests from same IP:
+        BLOCK request
+        RETURN error: "Too many requests"
+
+MIDDLEWARE requireHTTPS():
+    IF connection IS NOT https:
+        REDIRECT to https version
+        
+
+--Optional improvements for real-world usage:--
+Add rate limiting on ForgotPasswordRequest to prevent abuse (e.g., multiple requests for the same email).
+
+Make sure generateSecureToken() creates long, cryptographically random tokens.
+
+Invalidate all active sessions after password reset for better security.
+
+Use HTTPS links always for reset URLs.
+
+Log password reset requests and completions for audit.
