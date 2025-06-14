@@ -1,29 +1,50 @@
-Function CreateRoom
+Function CalculateScore QuizWeb
 
-Function CreateRoom(jwt_token, room_settings):
+FUNCTION CalculateScore(quizMode, quizPages, userAnswers):
+FUNCTION CalculateScore(quizMode, quizPages, userAnswers):
 
-//Verify JWT token
-user_info = VERIFY_JWT(jwt_token)
+    SET totalScore = 0
 
-IF user_info is invalid:
-	RETURN error: "Please login or sign up first before create a room"
+    FOR EACH page IN quizPages:
 
-IF (MiddlewareCheckBeforeCreateRoom)
-	RETURn error: "You cannot create duplicate room, please delte old room before create new room"
+        correctChoices = page.correctAnswers
+        selectedChoices = userAnswers[page.id]
 
-// Use user_info to create the room
-	room_id = GENERATE_UNIQUE_ID()
+        // If Time Challenge mode
+        IF quizMode == "Time Challenge":
 
-	room_data = {
-        _id: room_id,
-        owner_id: user_info.id,
-        room_name: room_settings.name,
-        settings: room_settings,
-        is_ready: false,               // Default: quiz not ready yet
-        participants: [],             // Empty participant list initially
-        created_at: CURRENT_TIMESTAMP
-    }
+            maxPoints = page.maxPoints       // e.g., 5 points
+            timeLimit = page.timeLimit       // e.g., 20 seconds
 
-	INSERT room_data INTO rooms_collection
+            // Simulated built-in timer
+            startTime = NOW()                // Start tracking time
+            WAIT_FOR_USER_TO_SUBMIT(page.id) // Pseudocode: user selects and submits
+            endTime = NOW()                  // Time when answer was submitted
 
-RETURN success: "Room created", room_id: room_id
+            timeTaken = endTime - startTime
+
+            IF timeTaken > timeLimit:
+                questionScore = 0
+            ELSE:
+                questionScore = maxPoints * ((timeLimit - timeTaken) / timeLimit)
+
+            // Check if answer is correct
+            IF page.hasMultipleCorrectChoices:
+                IF selectedChoices == correctChoices:
+                    totalScore = totalScore + questionScore
+            ELSE:
+                IF selectedChoices == correctChoices[0]:
+                    totalScore = totalScore + questionScore
+
+        ELSE:  // Normal Mode
+
+            // No timing logic, just correctness
+            IF page.hasMultipleCorrectChoices:
+                IF selectedChoices == correctChoices:
+                    totalScore = totalScore + 1
+            ELSE:
+                IF selectedChoices == correctChoices[0]:
+                    totalScore = totalScore + 1
+
+    RETURN ROUND(totalScore, 2)
+
