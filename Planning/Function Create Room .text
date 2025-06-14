@@ -1,0 +1,42 @@
+FUNCTION Create_Room(jwt_token, room_name, room_settings):
+
+    // 1. Verify JWT token
+    user_info = VERIFY_JWT(jwt_token)
+    IF user_info is invalid:
+        RETURN error: "Please login or sign up first"
+
+    // 2. Check if a room with the same name or by this user already exists (optional, for uniqueness)
+    existing_room = FIND ONE FROM rooms_collection WHERE name == room_name OR owner_id == user_info.id AND is_ready == FALSE
+    IF existing_room is not null:
+        RETURN error: "Room already exists or you have an unfinished room"
+
+    // 3. Generate a unique room_id
+    room_id = GENERATE_UNIQUE_ROOM_ID()
+
+    // 4. Create new room document
+    new_room = {
+        _id: room_id,
+        name: room_name,
+        owner_id: user_info.id,
+        settings: room_settings,
+        participants: [user_info.id],
+        is_ready: false,
+        created_at: CURRENT_TIMESTAMP
+    }
+    INSERT new_room INTO rooms_collection
+
+    // 5. (Optional) Create a new collection for room-specific data if needed
+    // For most apps, you just reference room_id in related collections (like quizzes, logs, etc.)
+    // CREATE_COLLECTION("room_" + room_id)  // Only if you want a separate collection per room (not common)
+
+    // 6. Log the creation event
+    INSERT INTO room_logs_collection:
+        {
+            user_id: user_info.id,
+            room_id: room_id,
+            action: "create_room",
+            timestamp: CURRENT_TIMESTAMP
+        }
+
+    // 7. Return room info to frontend
+    RETURN success: true, message: "Room created successfully", room_id: room_id, data: new_room
