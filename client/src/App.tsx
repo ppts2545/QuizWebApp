@@ -3,6 +3,7 @@ import './App.css'
 import Navbar from './components/Navbar/Navbar.tsx';
 import Slider from './components/SliderShow/Slider.tsx';
 import Banner from './components/Banner_Adds/BannerAdds.tsx';
+import Room_Thumbnail from './components/Room_Thumbnail/Room_Thumbnail.tsx';
 
 function App() {
 
@@ -27,6 +28,7 @@ function App() {
           />
         </div>
       </div>
+      <Room_Thumbnail />
       
     </>
   )

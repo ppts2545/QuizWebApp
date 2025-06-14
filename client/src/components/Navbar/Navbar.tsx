@@ -1,32 +1,58 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
-import "./Navbar.css"; // Assuming you have a CSS file for additional styles
-
-type NavItem = {
-    name: string;
-    path: string;
-}
-
-const navItems: NavItem[] = [
-    { name: 'Home', path: '/' },
-    { name: 'Quiz', path: '/quiz' },
-    { name: 'Leaderboard', path: '/leaderboard' },
-    { name: 'About', path: '/about' },
-];
+import "./Navbar.css";
 
 const Navbar: React.FC = () => {
+  const handleHomeClick = () => {
+    console.log("Home clicked");
+    // Add specific logic for Home
+  };
+
+  const handleQuizClick = () => {
+    console.log("Quiz clicked");
+    // Add specific logic for Quiz
+    
+  };
+
+  const handleLeaderboardClick = () => {
+    console.log("Leaderboard clicked");
+    // Add specific logic for Leaderboard
+  };
+
+  const handleAboutClick = () => {
+    console.log("About clicked");
+    // Add specific logic for About
+  };
+
   return (
     <nav className="navbar">
       <div className="logo">🌟 MyWebsite</div>
       <ul className="nav-list">
-        {navItems.map((item) => (
-          <li key={item.path} >
-            <Link to={item.path} className="nav-link">
-              {item.name}
-            </Link>
-          </li>
-        ))}
+        <li>
+          <Link to="/" className="nav-link" onClick={handleHomeClick}>
+            Home
+          </Link>
+        </li>
+        <li>
+          <Link to="/quiz" className="quiz_navbar_link" onClick={handleQuizClick}>
+            Quiz
+            <div className="dropdown-content">
+              <Link to="/quiz/1">Create Room</Link>
+              <Link to="/quiz/2">Join Room</Link>
+              <Link to="/quiz/3">Room Info</Link>
+            </div>
+          </Link>
+        </li>
+        <li>
+          <Link to="/leaderboard" className="nav-link" onClick={handleLeaderboardClick}>
+            Leaderboard
+          </Link>
+        </li>
+        <li>
+          <Link to="/about" className="nav-link" onClick={handleAboutClick}>
+            About
+          </Link>
+        </li>
       </ul>
     </nav>
   );
